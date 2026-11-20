@@ -1,0 +1,9 @@
+{
+  "name": "session",
+  "version": "0.3.0",
+  "description": "End a session: /session:handoff writes the NeoCortex handoff memory and checks it, /session:endsession persists durable learnings to NeoCortex.",
+  "author": {
+    "name": "AzureStackNerd"
+  },
+  "repository": "https://github.com/AzureStackNerd/claude-skills"
+}

@@ -1,0 +1,9 @@
+{
+  "name": "delivery",
+  "version": "0.3.0",
+  "description": "The delivering-a-story skill: refine, design, build and review a backlog story with a Scrum team (Architect, Developer, TestWriter, Reviewer, Scrum Master) as herdr panes. Project specifics come from each repository's .claude/delivery.md; backlog adapters for Azure DevOps and GitHub Issues.",
+  "author": {
+    "name": "AzureStackNerd"
+  },
+  "repository": "https://github.com/AzureStackNerd/claude-skills"
+}

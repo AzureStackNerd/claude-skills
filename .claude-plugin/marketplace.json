@@ -1,0 +1,19 @@
+{
+  "name": "azurestacknerd-skills",
+  "description": "AzureStackNerd's own Claude Code plugins",
+  "owner": {
+    "name": "AzureStackNerd"
+  },
+  "plugins": [
+    {
+      "name": "delivery",
+      "source": "./plugins/delivery",
+      "description": "Deliver a backlog story with a Scrum team of herdr panes, in any repository with a .claude/delivery.md"
+    },
+    {
+      "name": "session",
+      "source": "./plugins/session",
+      "description": "End a session: /session:handoff (NeoCortex handoff memory) and /session:endsession (durable learnings)"
+    }
+  ]
+}
