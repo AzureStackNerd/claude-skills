@@ -1,0 +1,10 @@
+{
+  "name": "reader",
+  "version": "0.1.0",
+  "description": "read-ask: a read-only reader on a cheaper model for reconnaissance reads, so only its short answer enters the session's context. Configurable per user (settings file, model).",
+  "author": {
+    "name": "AzureStackNerd"
+  },
+  "repository": "https://github.com/AzureStackNerd/claude-skills",
+  "license": "MIT"
+}

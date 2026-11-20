@@ -5,6 +5,7 @@ AzureStackNerd's Claude Code plugins, as the marketplace `azurestacknerd-skills`
 | Plugin | What it gives |
 | --- | --- |
 | `delivery` | The skill `delivery:delivering-a-story`: refine, design, build and review a backlog story with a Scrum team (Architect, Developer, TestWriter, Reviewer, Scrum Master) as herdr panes, in any repository that has a `.claude/delivery.md` |
+| `reader` | The command `read-ask` and its skill: a cheaper, read-only model answers a reconnaissance question (where is X, what calls Y, what does this doc say), so only its short answer enters your context. Haiku by default; your own settings file or model through `READER_SETTINGS` / `READER_MODEL` |
 | `session` | The commands `/session:handoff` (write the NeoCortex handoff memory and check it with the bundled `scripts/Test-Handoff.ps1`, which needs PowerShell 7) and `/session:endsession` (persist durable learnings to NeoCortex). They replace the per-pc copies in `~/.claude/commands/`; delete those on each pc once the plugin is installed |
 
 Each plugin works on a fresh Claude Code install: everything a skill or command needs is in the plugin. A user's own
@@ -15,6 +16,7 @@ instructions or memory may tune it (another model for a role, a stricter rule), 
 | Plugin | Needs |
 | --- | --- |
 | `delivery` | herdr and its `hc` command line for the team's panes; Node.js for the two checkers; a `.claude/delivery.md` in each repository that delivers stories |
+| `reader` | The `claude` command on PATH and bash (Git Bash on Windows). A settings file of your own should set its model, or the CLI's default model runs |
 | `session` | A NeoCortex MCP server, where the handoff and the learnings are stored; PowerShell 7 (`pwsh`) for `Test-Handoff.ps1` |
 
 ## Install on a pc
@@ -26,6 +28,7 @@ inside a session and plugin updates can fail.
 claude plugin marketplace add AzureStackNerd/claude-skills
 claude plugin install delivery@azurestacknerd-skills
 claude plugin install session@azurestacknerd-skills
+claude plugin install reader@azurestacknerd-skills
 claude plugin details delivery
 claude plugin details session
 ```
@@ -41,6 +44,7 @@ Enable auto-update). By hand:
 claude plugin marketplace update azurestacknerd-skills
 claude plugin update delivery@azurestacknerd-skills
 claude plugin update session@azurestacknerd-skills
+claude plugin update reader@azurestacknerd-skills
 ```
 
 A pc gets a new copy of a plugin only when `version` in its `plugins/<plugin>/.claude-plugin/plugin.json` changes, so
@@ -62,7 +66,7 @@ In a repository without one, the skill stops at the start of a story and offers 
 Scripts use Node's standard library only. From the repository root:
 
 ```shell
-node --test --test-concurrency=4 plugins/delivery/skills/delivering-a-story/check-refinement.test.mjs plugins/delivery/skills/delivering-a-story/check-gate.test.mjs tests/no-project-specifics.test.mjs tests/session-plugin.test.mjs
+node --test --test-concurrency=4 plugins/delivery/skills/delivering-a-story/check-refinement.test.mjs plugins/delivery/skills/delivering-a-story/check-gate.test.mjs tests/no-project-specifics.test.mjs tests/session-plugin.test.mjs tests/reader.test.mjs
 claude plugin validate .
 pwsh -NoProfile -Command "Invoke-Pester -Path plugins/session/scripts/Test-Handoff.Tests.ps1"
 ```

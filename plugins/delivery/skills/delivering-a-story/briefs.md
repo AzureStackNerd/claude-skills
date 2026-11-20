@@ -9,6 +9,10 @@ rules, when it has any. Every brief ends with: run commands in the foreground wi
 project file and the backlog adapter"). "The source", "the tests", "the tests command", "the row command", "the quick
 checks", "the whole suite" and "the scratch path" are the project file's.
 
+When the reader plugin is installed (`command -v read-ask` finds it), every brief also says: **find things with
+`read-ask`** (where a function is defined or called, which tests import a module, what a document says) and read with
+Read only the files you will edit or must quote exactly; open the `path:line` it quotes before you rely on it.
+
 Every brief also says **what to read and what not to**. A refinement runs about 46k characters (roughly 12k tokens);
 an agent that reads it whole to answer one question spends most of its context on rows it will never touch. Name the
 ACs, rows and design sections a gate needs (SKILL.md, "Cost").

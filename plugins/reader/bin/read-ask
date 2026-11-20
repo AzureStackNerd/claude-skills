@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+# read-ask: answer one reconnaissance question (where is X, what calls Y, what does this doc say) by letting a cheaper
+# model read the files, so only its short answer enters the caller's context.
+#
+# The reader can only read: its tools are Read, Grep and Glob and nothing else (no Bash, no Edit, no Write, no MCP
+# tools), it runs in dontAsk mode so it never prompts, and it loads none of your settings files (--setting-sources ""),
+# so no hook, plugin, output style or permission rule of yours reaches it. Only the settings file you pass applies.
+#
+# Usage: read-ask [--settings <file>] [--model <model>] [--] <question...>
+#   --settings  a Claude Code settings file for the reader, for example one that points at another gateway or model;
+#               default: $READER_SETTINGS. Without one the reader uses your normal login.
+#   --model     the model; default: $READER_MODEL, else haiku without a settings file, else the settings file's own
+#               model (set one there, or the CLI's default model runs).
+#   $READER_MAX_TURNS caps the reader's turns (default 15).
+set -euo pipefail
+
+settings="${READER_SETTINGS:-}"
+model="${READER_MODEL:-}"
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --settings) [ $# -ge 2 ] || { echo "read-ask: --settings needs a file" >&2; exit 2; }; settings="$2"; shift 2 ;;
+    --model) [ $# -ge 2 ] || { echo "read-ask: --model needs a model" >&2; exit 2; }; model="$2"; shift 2 ;;
+    --) shift; break ;;
+    -*) echo "read-ask: unknown option $1 (put -- before a question that starts with -)" >&2; exit 2 ;;
+    *) break ;;
+  esac
+done
+question="$*"
+if [ -z "${question// /}" ]; then
+  echo "usage: read-ask [--settings <file>] [--model <model>] [--] <question>" >&2
+  exit 2
+fi
+if [ -n "$settings" ] && [ ! -f "$settings" ]; then
+  echo "read-ask: settings file not found: $settings" >&2
+  exit 2
+fi
+if [ -z "$settings" ] && [ -z "$model" ]; then model=haiku; fi
+
+rules='You are a read-only reader answering one question for another agent. Search with Grep and Glob before you
+conclude, then read what you need. Never suggest edits.
+Answer in at most 20 lines. Give each finding as path:line followed by the line itself, verbatim.
+If you find nothing, say "not found" and name every search you ran (pattern and path), so the caller can judge it.'
+
+args=(--setting-sources "")
+if [ -n "$settings" ]; then args+=(--settings "$settings"); fi
+if [ -n "$model" ]; then args+=(--model "$model"); fi
+args+=(-p --strict-mcp-config --tools "Read,Grep,Glob" --allowedTools "Read,Grep,Glob" --disallowedTools "mcp__*"
+  --permission-mode dontAsk --max-turns "${READER_MAX_TURNS:-15}" --no-session-persistence --output-format text
+  --append-system-prompt "$rules")
+
+# "--" ends claude's options, so a question can never be read as one of its flags.
+exec claude "${args[@]}" -- "$question"
